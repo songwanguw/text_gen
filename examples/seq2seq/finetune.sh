@@ -3,9 +3,9 @@
 python finetune.py \
     --learning_rate=3e-5 \
     --fp16 \
-    --gpus 1 \
+    --gpus 4 \
     --do_train \
     --do_predict \
-    --n_val 1000 \
-    --val_check_interval 0.1 \
+    --n_val 2000 \
+    --val_check_interval 0.2 \
     "$@"
