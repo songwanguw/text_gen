@@ -963,7 +963,7 @@ class LearnedSpeakerEmbedding(nn.Embedding):
                 x1, y1 = (rows[i+1].item(), cols[i+1].item())
             else:
                 x1, y1 = -1, -1
-            role = token_ids[x][y+1].item()
+            role = input_ids[x][y+1].item()
             if not role in roles_map:
                 roles_map[role] = len(roles_map)+1
             if x1 == x:
