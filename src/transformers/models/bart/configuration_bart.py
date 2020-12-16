@@ -99,6 +99,12 @@ class BartConfig(PretrainedConfig):
         decoder_layerdrop: (:obj:`float`, `optional`, defaults to 0.0):
             The LayerDrop probability for the decoder. See the `LayerDrop paper <see
             https://arxiv.org/abs/1909.11556>`__ for more details.
+        turn_idx: (:obj:`int`, `optional`, defaults to 1721):
+            the tolen_id of the token seprating the conversation turns.  tokenizer.convert_tokens_to_ids('Ġ|') is 1721, that is ' |' token
+        max_turn_embeddings: (:obj:`int`, `optional`, defaults to 150):
+            The maximum number of turns this model might ever be used with.
+        max_speaker_embeddings=10: (:obj:`int`, `optional`, defaults to 10):
+            The maximum number of different speakers this model might ever be used with.
         extra_pos_embeddings: (:obj:`int`, `optional`, defaults to 2):
             How many extra learned positional embeddings to use. Should be set to :obj:`pad_token_id+1`.
         num_labels: (:obj:`int`, `optional`, defaults to 3):
@@ -119,6 +125,7 @@ class BartConfig(PretrainedConfig):
         activation_dropout=0.0,
         extra_pos_embeddings=2,
         activation_function="gelu",
+        turn_idx=1721,
         vocab_size=50265,
         d_model=1024,
         encoder_ffn_dim=4096,
@@ -132,6 +139,8 @@ class BartConfig(PretrainedConfig):
         attention_dropout=0.0,
         dropout=0.1,
         max_position_embeddings=1024,
+        max_turn_embeddings=150,
+        max_speaker_embeddings=10,
         init_std=0.02,
         classifier_dropout=0.0,
         num_labels=3,
@@ -206,6 +215,11 @@ class BartConfig(PretrainedConfig):
         # pos embedding offset
         self.extra_pos_embeddings = extra_pos_embeddings
         # bart has a hack that offsets positional embeddings by 2, other models don't do this
+
+        # parameters related to turn modeling
+        self.turn_idx = turn_idx
+        self.max_turn_embeddings = max_turn_embeddings
+        self.max_speaker_embeddings = max_speaker_embeddings
 
         self.force_bos_token_to_be_generated = force_bos_token_to_be_generated
 
