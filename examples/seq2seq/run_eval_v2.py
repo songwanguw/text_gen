@@ -41,7 +41,8 @@ def generate_summaries_or_translations(
     model = AutoModelForSeq2SeqLM.from_pretrained(model_name).to(device)
     if fp16:
         model = model.half()
-
+    config1 = model.config
+    print("old config >>>>>>>>>>", config1)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     logger.info(f"Inferred tokenizer type: {tokenizer.__class__}")  # if this is wrong, check config.model_type.
     print(f"Inferred tokenizer type: {tokenizer.__class__}")
@@ -53,13 +54,19 @@ def generate_summaries_or_translations(
         prefix = prefix or getattr(model.config, "prefix", "") or ""
     for examples_chunk in tqdm(list(chunks(examples, batch_size))):
         examples_chunk = [prefix + text for text in examples_chunk]
+        print(examples_chunk)
         batch = tokenizer(examples_chunk, return_tensors="pt", truncation=True, padding="longest").to(device)
+        print(batch)
         summaries = model.generate(
             input_ids=batch.input_ids,
             attention_mask=batch.attention_mask,
             **generate_kwargs,
         )
+        print(generate_kwargs)
+        print(model.config)
+        print(summaries)
         dec = tokenizer.batch_decode(summaries, skip_special_tokens=True, clean_up_tokenization_spaces=False)
+        print(dec)
         for hypothesis in dec:
             fout.write(hypothesis + "\n")
             fout.flush()
@@ -116,11 +123,13 @@ def run_generate(verbose=True):
     # Unspecified args like --num_beams=2 --decoder_start_token_id=4 are passed to model.generate
     args, rest = parser.parse_known_args()
     parsed_args = parse_numeric_n_bool_cl_kwargs(rest)
+    print(parsed_args)
     if parsed_args and verbose:
         print(f"parsed the following generate kwargs: {parsed_args}")
     examples = [" " + x.rstrip() if "t5" in args.model_name else x.rstrip() for x in open(args.input_path).readlines()]
     if args.n_obs > 0:
         examples = examples[: args.n_obs]
+    print(examples)
     Path(args.save_path).parent.mkdir(exist_ok=True)
     if args.reference_path is None and Path(args.score_path).exists():
         warnings.warn(f"score_path {args.score_path} will be overwritten unless you type ctrl-c.")
