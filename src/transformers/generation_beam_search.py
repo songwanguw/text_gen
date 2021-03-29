@@ -266,6 +266,7 @@ class BeamSearchScorer(BeamScorer):
         final_beam_indices: torch.LongTensor,
         pad_token_id: Optional[int] = None,
         eos_token_id: Optional[int] = None,
+        return_score: Optional[bool] = False,
     ) -> torch.LongTensor:
         batch_size = len(self._beam_hyps)
 
@@ -283,15 +284,17 @@ class BeamSearchScorer(BeamScorer):
 
         # select the best hypotheses
         sent_lengths = input_ids.new(batch_size * self.num_beam_hyps_to_keep)
+        best_scores = []
         best = []
 
         # retrieve best hypotheses
         for i, beam_hyp in enumerate(self._beam_hyps):
             sorted_hyps = sorted(beam_hyp.beams, key=lambda x: x[0])
             for j in range(self.num_beam_hyps_to_keep):
-                best_hyp = sorted_hyps.pop()[1]
+                score_hyp, best_hyp = sorted_hyps.pop()
                 sent_lengths[self.num_beam_hyps_to_keep * i + j] = len(best_hyp)
                 best.append(best_hyp)
+                best_scores.append(score_hyp)
 
         # prepare for adding eos
         sent_max_len = min(sent_lengths.max().item() + 1, self.max_length)
@@ -306,7 +309,10 @@ class BeamSearchScorer(BeamScorer):
             decoded[i, : sent_lengths[i]] = hypo
             if sent_lengths[i] < self.max_length:
                 decoded[i, sent_lengths[i]] = eos_token_id
-        return decoded
+        if return_score:
+            return decoded, best_scores
+        else:
+            return decoded
 
 
 class BeamHypotheses:
