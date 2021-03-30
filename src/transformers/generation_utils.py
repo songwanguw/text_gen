@@ -315,6 +315,7 @@ class GenerationMixin:
         decoder_start_token_id: Optional[int] = None,
         use_cache: Optional[bool] = None,
         prefix_allowed_tokens_fn: Optional[Callable[[int, torch.Tensor], List[int]]] = None,
+        return_score: Optional[bool] = False,
         **model_kwargs
     ) -> torch.LongTensor:
         r"""
@@ -580,6 +581,7 @@ class GenerationMixin:
                 max_length=max_length,
                 pad_token_id=pad_token_id,
                 eos_token_id=eos_token_id,
+                return_score=return_score,
                 **model_kwargs,
             )
 
@@ -875,7 +877,7 @@ class GenerationMixin:
         max_length: Optional[int] = None,
         pad_token_id: Optional[int] = None,
         eos_token_id: Optional[int] = None,
-        return_score: Opitional[bool] = False, 
+        return_score: Optional[bool] = False, 
         **model_kwargs
     ):
         r"""
