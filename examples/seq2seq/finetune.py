@@ -63,7 +63,6 @@ class SummarizationModule(BaseTransformer):
                 raise ValueError("--sortish_sampler and --max_tokens_per_batch may not be used simultaneously")
 
         super().__init__(hparams, num_labels=None, mode=self.mode, **kwargs)
-        use_task_specific_params(self.model, "summarization")
         save_git_info(self.hparams.output_dir)
         self.metrics_save_path = Path(self.output_dir) / "metrics.json"
         self.hparams_save_path = Path(self.output_dir) / "hparams.pkl"
@@ -101,9 +100,11 @@ class SummarizationModule(BaseTransformer):
         self.hparams.git_sha = get_git_info()["repo_sha"]
         self.num_workers = hparams.num_workers
         self.decoder_start_token_id = None  # default to config
-        if self.model.config.decoder_start_token_id is None and isinstance(self.tokenizer, MBartTokenizer):
-            self.decoder_start_token_id = self.tokenizer.lang_code_to_id[hparams.tgt_lang]
-            self.model.config.decoder_start_token_id = self.decoder_start_token_id
+        print(type(self.tokenizer), "--------------------")
+        #if self.model.config.decoder_start_token_id:
+        self.decoder_start_token_id = self.tokenizer.convert_tokens_to_ids(hparams.tgt_lang)
+        self.model.config.decoder_start_token_id = self.decoder_start_token_id
+        print("decoder_start_token_id", self.decoder_start_token_id)
         self.dataset_class = (
             Seq2SeqDataset if hasattr(self.tokenizer, "prepare_seq2seq_batch") else LegacySeq2SeqDataset
         )
@@ -381,6 +382,7 @@ def main(args, model=None) -> SummarizationModule:
             model: SummarizationModule = SummarizationModule(args)
         else:
             model: SummarizationModule = TranslationModule(args)
+        print(model.config)
     dataset = Path(args.data_dir).name
     if (
         args.logger_name == "default"

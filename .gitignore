@@ -146,6 +146,8 @@ runs
 # data
 /data
 serialization_dir
+examples/seq2seq/data
+examples/seq2seq/models
 
 # emacs
 *.*~
@@ -159,3 +161,6 @@ tags
 
 # pre-commit
 .pre-commit*
+
+
+

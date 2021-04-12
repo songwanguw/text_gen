@@ -5,6 +5,7 @@ import datetime
 import json
 import time
 import warnings
+import logging
 from logging import getLogger
 from pathlib import Path
 from typing import Dict, List
@@ -17,6 +18,7 @@ from utils import calculate_bleu, calculate_rouge, chunks, parse_numeric_n_bool_
 
 
 logger = getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 DEFAULT_DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -42,6 +44,7 @@ def generate_summaries_or_translations(
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     logger.info(f"Inferred tokenizer type: {tokenizer.__class__}")  # if this is wrong, check config.model_type.
+    print(f"Inferred tokenizer type: {tokenizer.__class__}")
 
     start_time = time.time()
     # update config with task specific params

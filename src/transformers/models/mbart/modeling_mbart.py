@@ -29,11 +29,14 @@ class MBartForConditionalGeneration(BartForConditionalGeneration):
     """
     model_type = "mbart"
     config_class = MBartConfig
-    _keys_to_ignore_on_load_missing = [
-        "model.encoder.embed_positions.weight",
-        "model.decoder.embed_positions.weight",
-    ]
-    _keys_to_ignore_on_save = [
-        "model.encoder.embed_positions.weight",
-        "model.decoder.embed_positions.weight",
-    ]
+    #_keys_to_ignore_on_load_missing = [
+    #    "model.encoder.embed_positions.weight",
+    #    "model.decoder.embed_positions.weight",
+    #]
+    #_keys_to_ignore_on_save = [
+    #    "model.encoder.embed_positions.weight",
+    #    "model.decoder.embed_positions.weight",
+    #]
+    _keys_to_ignore_on_load_missing = []
+    _keys_to_ignore_on_save = []
+
